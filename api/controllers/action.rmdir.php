@@ -20,4 +20,4 @@ $rmdirController->match('/', function (Request $request) use ($app,$fmValidator)
 
 })->bind("action_rmdir");
 
-return $rmdirController ;
+return $rmdirController;

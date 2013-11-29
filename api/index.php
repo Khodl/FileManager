@@ -1,4 +1,8 @@
 <?php
+/**
+ * Create the environment and call the controllers
+ */
+
 
 // Require
 require_once __DIR__.'/../vendor/autoload.php';

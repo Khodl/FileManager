@@ -1,3 +1,3 @@
 directory:
-    rootURL: ../_files/
+    rootURL: ../_files/ #from api root
     salt: 1234567890

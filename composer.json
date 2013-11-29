@@ -1,6 +1,6 @@
 {
     "require": {
-        "silex/silex": "~1.1",
-        "symfony/yaml": "dev-master"
+        "symfony/yaml": "dev-master",
+        "silex/silex": "~1.1"
     }
 }

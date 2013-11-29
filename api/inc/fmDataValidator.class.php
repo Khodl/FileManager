@@ -118,11 +118,6 @@ class fmDataValidator {
 		$path = $request->get('path');
 		$givenKey = $request->get('key');
 
-		/*
-		if(! $path OR ! $givenKey)
-			$this->app->abort(403,"'path' and 'key' are required");
-		*/
-
 		// Check path
 		$this->checkPath($path);
 
@@ -137,7 +132,6 @@ class fmDataValidator {
 	public function getActionUrl($route,$key,$parameters=array()){
 		return $this->app['url_generator']->generate($route, array_merge(array('key' => $key),$parameters));
 	}
-
 
 	/**
 	 * @param $key
@@ -156,9 +150,5 @@ class fmDataValidator {
 	public function getDirKey($path) {return $this->getKey('dir',$path);}
 	public function getRmDirKey($path) {return $this->getKey('rmDir',$path);}
 	public function getCreateKey($path) {return $this->getKey('create',$path);}
-
-	// Path URL
-	public function getWriteURL($path){ return $this->getKeyURL($this->getSaveKey($path),$path) ; }
-	public function getReadURL($path){ return $this->getKeyURL($this->getLoadKey($path),$path) ; }
 
 } 
