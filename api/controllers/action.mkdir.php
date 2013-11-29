@@ -9,14 +9,14 @@ $mkdirController->match('/', function (Request $request) use ($app,$fmValidator)
 	$fmValidator->checkPathKey($request,"MkDir");
 	$fmValidator->checkRequestParameters(array('dirname'),$request);
 
-	$filename = $request->get('dirname') ;
-	$path = $fmValidator->getWorkingPath($request->get('path')).'/'.$filename;
+	$dirname = $request->get('dirname') ;
+	$path = $fmValidator->getWorkingPath($request->get('path')).'/'.$dirname;
 
-	if(file_exists($path)) $app->abort(409,"Folder '$filename' already exists");
+	if(file_exists($path)) $app->abort(409,"Folder '$dirname' already exists");
 
 	mkdir($path);
 	$output = array(
-		'result' => "File '$filename' created"
+		'result' => "Folder '$dirname' created"
 	);
 
 	return $app->json($output) ;

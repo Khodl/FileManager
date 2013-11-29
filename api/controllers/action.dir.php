@@ -34,6 +34,7 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 				$i['dirURL'] = $fmValidator->getActionUrl("action_dir",$fmValidator->getDirKey($fullPath),array("path"=>$fullPath)) ;
 				$i['mkdirURL'] = $fmValidator->getActionUrl("action_mkdir",$fmValidator->getMkDirKey($fullPath),array("path"=>$fullPath)) ;
 				$i['rmdirURL'] = $fmValidator->getActionUrl("action_rmdir",$fmValidator->getRmDirKey($fullPath),array("path"=>$fullPath)) ;
+				$i['createURL'] = $fmValidator->getActionUrl("action_create",$fmValidator->getCreateKey($fullPath),array("path"=>$fullPath)) ;
 			}
 
 			// File content

@@ -44,6 +44,7 @@ $prefixCommand = 'exec/{key}/';
 $app->mount($prefixCommand.'dir', include "./controllers/action.dir.php");
 $app->mount($prefixCommand.'mkdir', include "./controllers/action.mkdir.php");
 $app->mount($prefixCommand.'rmdir', include "./controllers/action.rmdir.php");
+$app->mount($prefixCommand.'create', include "./controllers/action.create.php");
 
 // Run app
 $app->run();
