@@ -5,16 +5,19 @@
  * Time: 09:33
  */
 
+use \Symfony\Component\HttpFoundation\Request ;
+use Silex\Application ;
+
 class fmDataValidator {
 
-	private $root,$app ;
+	private $root,$rootRelative ;
+	private $app ;
 	private $key = "";
-
 
 	/**
 	 * @param $app A Silex app
 	 */
-	public function __construct($app){
+	public function __construct(Application $app){
 		$this->app = $app ;
 	}
 
@@ -25,15 +28,24 @@ class fmDataValidator {
 		$this->key = $key ;
 	}
 
+	public function getWorkingPath($path){
+		return realpath($this->rootRelative.'/'.$path);
+	}
+
 	/**
 	 * @param $root String containing the main folder
 	 * @throws Exception When the folder doesn't exist
 	 */
-	public function setRoot($root){
-		$exception = "Root '$root' doesn't exist";
-		$root = realpath($root) ;
-		if(! $root) throw new Exception($exception);
+	public function setRoot($rootRelative){
+		$root = realpath($rootRelative) ;
+		if(! $root) throw new Exception("Root '$rootRelative' doesn't exist");
 		$this->root = $root ;
+		$this->rootRelative = $rootRelative ;
+	}
+
+	public function getPath($request){
+		$this->checkRequestParameters(array('path'),$request);
+		return $this->rootRelative.$request->get('path');
 	}
 
 	/**
@@ -41,9 +53,9 @@ class fmDataValidator {
 	 * @param $request a Silex Request
 	 * @return bool
 	 */
-	public function checkRequestParameters($parameters,$request){
+	public function checkRequestParameters(Array $parameters,Request $request){
 		foreach($parameters AS $name){
-			if(! $request->get($name)) return $this->app->abort(400,"Parameter '$name' not found"); ;
+			if(! $request->get($name)) $this->app->abort(400,"Parameter '$name' not found");
 		}
 		return true ;
 	}
@@ -60,7 +72,7 @@ class fmDataValidator {
 			$this->app->abort(404,"Path '$path' is not found");
 		};
 
-		$fullPath = realpath($path) ;
+		$fullPath = realpath($this->rootRelative.$path) ;
 		if(! $fullPath) $abort() ;
 		if(substr($fullPath,0,strlen($this->root)) != $this->root) $abort() ;
 
@@ -88,8 +100,44 @@ class fmDataValidator {
 	 * Calculate key, depending on the type
 	 */
 	private function getKey($type,$path){
-		return substr(md5($path.$type.$this->key),0,10);
+		return substr(md5(realpath($this->rootRelative.'/'.$path).$type.$this->key),0,10);
 	}
+
+	/**
+	 * @param Request $request
+	 * @param $type
+	 *
+	 * Check key and path
+	 */
+	public function checkPathKey(Request $request,$type){
+
+		// Check request
+		$this->checkRequestParameters(array('path','key'),$request);
+
+		// Get parameters
+		$path = $request->get('path');
+		$givenKey = $request->get('key');
+
+		/*
+		if(! $path OR ! $givenKey)
+			$this->app->abort(403,"'path' and 'key' are required");
+		*/
+
+		// Check path
+		$this->checkPath($path);
+
+		// Check key
+		$key = $this->{'get'.$type.'Key'}($path);
+		if($key != $givenKey)
+			$this->app->abort(403,"Key should be: ".$key." (and not ".$givenKey.")");
+
+		return true ;
+	}
+
+	public function getActionUrl($route,$key,$parameters=array()){
+		return $this->app['url_generator']->generate($route, array_merge(array('key' => $key),$parameters));
+	}
+
 
 	/**
 	 * @param $key
@@ -101,11 +149,16 @@ class fmDataValidator {
 	}
 
 	// Key calculations
-	private function getWriteKey($path) {return $this->getKey('write',$path);}
-	private function getReadKey($path) {return $this->getKey('read',$path);}
+	public function getSaveKey($path) {return $this->getKey('save',$path);}
+	public function getLoadKey($path) {return $this->getKey('load',$path);}
+	public function getDeleteKey($path) {return $this->getKey('delete',$path);}
+	public function getMkDirKey($path) {return $this->getKey('mkDir',$path);}
+	public function getDirKey($path) {return $this->getKey('dir',$path);}
+	public function getRmDirKey($path) {return $this->getKey('rmDir',$path);}
+	public function getCreateKey($path) {return $this->getKey('create',$path);}
 
 	// Path URL
-	public function getWriteURL($path){ return $this->getKeyURL($this->getWriteKey($path),$path) ; }
-	public function getReadURL($path){ return $this->getKeyURL($this->getReadKey($path),$path) ; }
+	public function getWriteURL($path){ return $this->getKeyURL($this->getSaveKey($path),$path) ; }
+	public function getReadURL($path){ return $this->getKeyURL($this->getLoadKey($path),$path) ; }
 
 } 

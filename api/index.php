@@ -7,18 +7,28 @@ require_once './inc/fmDataValidator.class.php';
 // Use
 use Silex\Application ;
 use Symfony\Component\Debug\ExceptionHandler;
+use Symfony\Component\Debug\ErrorHandler ;
+use Symfony\Component\Yaml\Parser;
 
-// Exceptions
-ExceptionHandler::register();
+// Errors & exceptions display
+$debug = true ;
+ExceptionHandler::register($debug);
+ErrorHandler::register($debug);
 
 // Starting a new app
 $app = new Silex\Application();
 $app->boot();
+$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+
+// YML
+$yaml = new Parser();
+$app['config'] = $yaml->parse(file_get_contents('./config.yml'));
+//$app->register(new DerAlex\Silex\YamlConfigServiceProvider(__DIR__ . '/config.yml'));
 
 // File Manager validator
 $fmValidator = new fmDataValidator($app);
-$fmValidator->setRoot("_files");
-$fmValidator->setKey("1234567890");
+$fmValidator->setRoot($app['config']['directory']['rootURL']);
+$fmValidator->setKey($app['config']['directory']['rootURL']);
 
 // Error handler
 $app->error(function (\Exception $e) use ($app){
@@ -26,8 +36,10 @@ $app->error(function (\Exception $e) use ($app){
 });
 
 // Loading controllers
-$prefixCommand = '/exec/';
+$prefixCommand = 'exec/{key}/';
 $app->mount($prefixCommand.'dir', include "./controllers/action.dir.php");
+$app->mount($prefixCommand.'mkdir', include "./controllers/action.mkdir.php");
+$app->mount($prefixCommand.'rmdir', include "./controllers/action.rmdir.php");
 
 // Run app
 $app->run();

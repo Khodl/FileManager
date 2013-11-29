@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "692efe36e90f1072a59fa41d46da406d",
+    "hash": "347bf0d1eda4263cbd17ac95b9cba0f1",
     "packages": [
         {
             "name": "pimple/pimple",
@@ -461,6 +461,53 @@
             "description": "Symfony Routing Component",
             "homepage": "http://symfony.com",
             "time": "2013-09-29 19:41:41"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "dev-master",
+            "target-dir": "Symfony/Component/Yaml",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Yaml.git",
+                "reference": "1481f096caead542c2dfadd67d9fd6124d97e273"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/1481f096caead542c2dfadd67d9fd6124d97e273",
+                "reference": "1481f096caead542c2dfadd67d9fd6124d97e273",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Yaml\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Yaml Component",
+            "homepage": "http://symfony.com",
+            "time": "2013-11-26 16:42:52"
         }
     ],
     "packages-dev": [
@@ -470,9 +517,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "symfony/yaml": 20
+    },
     "platform": [
 
     ],

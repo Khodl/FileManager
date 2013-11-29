@@ -6,28 +6,45 @@ $dirController = $app['controllers_factory'];
 
 $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 
-	$fmValidator->checkRequestParameters(array('path'),$request);
-	$path = $request->get('path');
-	$fmValidator->checkFolder($path);
+	$fmValidator->checkPathKey($request,"Dir");
+	//$path = $fmValidator->getPath($request);
+	$path = $request->get('path') ;
+
 
 	$output = array();
-	$dir = opendir($path);
+	$dir = opendir($fmValidator->getWorkingPath($path));
 	while($file = readdir($dir)){
 		if($file{0} != '.'){
+
 			$fullPath = $path.'/'.$file ;
-			$output['result'][] = array(
+
+			$isFolder = is_dir($fmValidator->getWorkingPath($fullPath)) ;
+
+			// Folder + file content
+			$i = array(
 				'name' => $file,
 				'file' => $fullPath,
-				'isFolder' => is_dir($fullPath),
+				'isFolder' => $isFolder,
 				'lastEdition' => filectime($fullPath),
-				'writeURL' => $fmValidator->getWriteURL($fullPath),
-				'readURL' => $fmValidator->getReadURL($fullPath),
 			);
+
+			// Folder content
+			if($isFolder){
+				$i['isLazy'] = true ;
+				$i['dirURL'] = $fmValidator->getActionUrl("action_dir",$fmValidator->getDirKey($fullPath),array("path"=>$fullPath)) ;
+				$i['mkdirURL'] = $fmValidator->getActionUrl("action_mkdir",$fmValidator->getMkDirKey($fullPath),array("path"=>$fullPath)) ;
+				$i['rmdirURL'] = $fmValidator->getActionUrl("action_rmdir",$fmValidator->getRmDirKey($fullPath),array("path"=>$fullPath)) ;
+			}
+
+			// File content
+
+			$output['result'][] = $i ;
+
 		}
 	}
 
     return $app->json($output) ;
 
-});
+})->bind("action_dir");
 
 return $dirController ;
