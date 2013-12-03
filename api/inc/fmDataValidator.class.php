@@ -28,6 +28,12 @@ class fmDataValidator {
 		$this->key = $key ;
 	}
 
+	/**
+	 * @param $path
+	 * @return string
+	 *
+	 * Should not be displayed
+	 */
 	public function getWorkingPath($path){
 		return realpath($this->rootRelative.'/'.$path);
 	}
@@ -43,6 +49,10 @@ class fmDataValidator {
 		$this->rootRelative = $rootRelative ;
 	}
 
+	/**
+	 * @param $request
+	 * @return string
+	 */
 	public function getPath($request){
 		$this->checkRequestParameters(array('path'),$request);
 		return $this->rootRelative.$request->get('path');
@@ -129,17 +139,16 @@ class fmDataValidator {
 		return true ;
 	}
 
+	/**
+	 * @param $route
+	 * @param $key
+	 * @param array $parameters
+	 * @return mixed
+	 *
+	 * Generate URL with a key
+	 */
 	public function getActionUrl($route,$key,$parameters=array()){
 		return $this->app['url_generator']->generate($route, array_merge(array('key' => $key),$parameters));
-	}
-
-	/**
-	 * @param $key
-	 * @param $path
-	 * @return string
-	 */
-	private function getKeyURL($key,$path){
-		return "./explorer/".$key."/".$path ;
 	}
 
 	// Key calculations

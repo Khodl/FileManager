@@ -27,7 +27,6 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // YML
 $yaml = new Parser();
 $app['config'] = $yaml->parse(file_get_contents('./config.yml'));
-//$app->register(new DerAlex\Silex\YamlConfigServiceProvider(__DIR__ . '/config.yml'));
 
 // File Manager validator
 $fmValidator = new fmDataValidator($app);

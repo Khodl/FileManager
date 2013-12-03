@@ -13,7 +13,7 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 	$output = array();
 	$dir = opendir($fmValidator->getWorkingPath($path));
 	while($file = readdir($dir)){
-		if($file{0} != '.'){
+		if($file != '..'){
 
 			$fullPath = $path.'/'.$file ;
 			$wp = $fmValidator->getWorkingPath($fullPath) ;
@@ -23,7 +23,7 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 			// Folder + file content
 			$i = array(
 				'name' => $file,
-				'file' => $fullPath,
+				'path' => $fullPath,
 				'isFolder' => $isFolder,
 				'lastEdition' => filectime($wp),
 			);
