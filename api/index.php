@@ -45,6 +45,9 @@ $app->mount($prefixCommand.'dir', include "./controllers/action.dir.php");
 $app->mount($prefixCommand.'mkdir', include "./controllers/action.mkdir.php");
 $app->mount($prefixCommand.'rmdir', include "./controllers/action.rmdir.php");
 $app->mount($prefixCommand.'create', include "./controllers/action.create.php");
+$app->mount($prefixCommand.'load', include "./controllers/action.load.php");
+$app->mount($prefixCommand.'save', include "./controllers/action.save.php");
+$app->mount($prefixCommand.'delete', include "./controllers/action.delete.php");
 
 // Run app
 $app->run();

@@ -2,24 +2,33 @@
 
 use Symfony\Component\HttpFoundation\Request;
 
-$mkdirController = $app['controllers_factory'];
+$createController = $app['controllers_factory'];
 
-$mkdirController->match('/', function (Request $request) use ($app,$fmValidator) {
+$createController->match('/', function (Request $request) use ($app,$fmValidator) {
 
 	$fmValidator->checkPathKey($request,"Create");
 	$fmValidator->checkRequestParameters(array('filename','content'),$request);
 
 	$filename = $request->get('filename') ;
+	$filename = str_replace('<timestamp>',time(),$filename);
+	$filename = str_replace('<random>',rand(0,pow(10,10)),$filename);
 	$path = $fmValidator->getWorkingPath($request->get('path')).'/'.$filename;
+
+	// Todo : check file name
 
 	if(file_exists($path)) $app->abort(409,"File '$filename' already exists");
 
 	file_put_contents($path,$request->get('content'));
 
 	return $app->json(array(
-		'result' => "File '$filename' created"
+		'result' => array(
+			'message'=>"File '$filename' created",
+			'filename' => $filename,
+			//'content' => file_get_contents($path)
+			// Todo : writeURL & readURL
+		)
 	)) ;
 
 })->bind("action_create");
 
-return $mkdirController;
+return $createController;

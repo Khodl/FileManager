@@ -7,7 +7,6 @@ $dirController = $app['controllers_factory'];
 $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 
 	$fmValidator->checkPathKey($request,"Dir");
-	//$path = $fmValidator->getPath($request);
 	$path = $request->get('path') ;
 
 
@@ -17,15 +16,16 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 		if($file{0} != '.'){
 
 			$fullPath = $path.'/'.$file ;
+			$wp = $fmValidator->getWorkingPath($fullPath) ;
 
-			$isFolder = is_dir($fmValidator->getWorkingPath($fullPath)) ;
+			$isFolder = is_dir($wp) ;
 
 			// Folder + file content
 			$i = array(
 				'name' => $file,
 				'file' => $fullPath,
 				'isFolder' => $isFolder,
-				'lastEdition' => filectime($fullPath),
+				'lastEdition' => filectime($wp),
 			);
 
 			// Folder content
@@ -35,9 +35,13 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 				$i['mkdirURL'] = $fmValidator->getActionUrl("action_mkdir",$fmValidator->getMkDirKey($fullPath),array("path"=>$fullPath)) ;
 				$i['rmdirURL'] = $fmValidator->getActionUrl("action_rmdir",$fmValidator->getRmDirKey($fullPath),array("path"=>$fullPath)) ;
 				$i['createURL'] = $fmValidator->getActionUrl("action_create",$fmValidator->getCreateKey($fullPath),array("path"=>$fullPath)) ;
+			}else{
+			// File content
+				$i['readURL'] = $fmValidator->getActionUrl("action_load",$fmValidator->getLoadKey($fullPath),array("path"=>$fullPath)) ;
+				$i['writeURL'] = $fmValidator->getActionUrl("action_save",$fmValidator->getSaveKey($fullPath),array("path"=>$fullPath)) ;
+				$i['deleteURL'] = $fmValidator->getActionUrl("action_delete",$fmValidator->getDeleteKey($fullPath),array("path"=>$fullPath)) ;
 			}
 
-			// File content
 
 			$output['result'][] = $i ;
 

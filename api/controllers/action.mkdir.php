@@ -9,6 +9,8 @@ $mkdirController->match('/', function (Request $request) use ($app,$fmValidator)
 	$fmValidator->checkPathKey($request,"MkDir");
 	$fmValidator->checkRequestParameters(array('dirname'),$request);
 
+	// Todo : check dir name
+
 	$dirname = $request->get('dirname') ;
 	$path = $fmValidator->getWorkingPath($request->get('path')).'/'.$dirname;
 
