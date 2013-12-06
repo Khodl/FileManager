@@ -35,7 +35,7 @@ $fmValidator->setKey($app['config']['directory']['rootURL']);
 
 // Error handler
 $app->error(function (\Exception $e) use ($app){
-    return $app->json(array('error'=>$e->getMessage())) ;
+    return $app->json(array('error'=>$e->getMessage(),'code'=>$e->getCode())) ;
 });
 
 // Loading controllers

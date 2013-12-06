@@ -22,15 +22,15 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 
 			// Folder + file content
 			$i = array(
-				'name' => $file,
+				'title' => $file,
 				'path' => $fullPath,
-				'isFolder' => $isFolder,
+				'folder' => $isFolder,
 				'lastEdition' => filectime($wp),
 			);
 
 			// Folder content
 			if($isFolder){
-				$i['isLazy'] = true ;
+				$i['lazy'] = true ;
 				$i['dirURL'] = $fmValidator->getActionUrl("action_dir",$fmValidator->getDirKey($fullPath),array("path"=>$fullPath)) ;
 				$i['mkdirURL'] = $fmValidator->getActionUrl("action_mkdir",$fmValidator->getMkDirKey($fullPath),array("path"=>$fullPath)) ;
 				$i['rmdirURL'] = $fmValidator->getActionUrl("action_rmdir",$fmValidator->getRmDirKey($fullPath),array("path"=>$fullPath)) ;
@@ -43,10 +43,17 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 			}
 
 
-			$output['result'][] = $i ;
+			//$output['result'][] = $i ;
+			$output[] = $i ;
 
 		}
 	}
+
+	usort($output, function($a, $b){
+		if($a['folder'] && !$b['folder']) return -1;
+		if(!$a['folder'] && $b['folder']) return 1;
+		return strcmp($a['title'],$b['title']);
+	});
 
     return $app->json($output) ;
 
