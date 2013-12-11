@@ -9,9 +9,10 @@ $mkdirController->match('/', function (Request $request) use ($app,$fmValidator)
 	$fmValidator->checkPathKey($request,"MkDir");
 	$fmValidator->checkRequestParameters(array('dirname'),$request);
 
-	// Todo : check dir name
-
 	$dirname = $request->get('dirname') ;
+
+	$fmValidator->checkFilename($dirname,'dirname');
+
 	$path = $fmValidator->getWorkingPath($request->get('path')).'/'.$dirname;
 
 	if(file_exists($path)) $app->abort(409,"Folder '$dirname' already exists");

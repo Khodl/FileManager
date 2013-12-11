@@ -119,7 +119,7 @@ class fmDataValidator {
 	 *
 	 * Check key and path
 	 */
-	public function checkPathKey(Request $request,$type){
+	public function checkPathKey(Request $request,$type,$abortIfWrongKey = true){
 
 		// Check request
 		$this->checkRequestParameters(array('path','key'),$request);
@@ -133,9 +133,25 @@ class fmDataValidator {
 
 		// Check key
 		$key = $this->{'get'.$type.'Key'}($path);
-		if($key != $givenKey)
-			$this->app->abort(403,"Key should be: ".$key." (and not ".$givenKey.")");
+		if($key != $givenKey){
+			if($abortIfWrongKey) return false ;
+			//$this->app->abort(403,"Key should be: ".$key." (and not ".$givenKey.")");
+			$this->app->abort(403,"Key '$givenKey' is wrong");
+		}
 
+		return true ;
+	}
+
+	/**
+	 * @param $var
+	 * @param $parametername
+	 * @return bool
+	 *
+	 * Detects special chars and abort if necessary
+	 */
+	public function checkFilename($var,$parametername){
+		if(preg_match("#[^a-z0-9_\.-]#i",$var) OR $var{0} == '.')
+			$this->app->abort(403,"'$parametername' is not valid.");
 		return true ;
 	}
 
@@ -157,6 +173,7 @@ class fmDataValidator {
 	public function getDeleteKey($path) {return $this->getKey('delete',$path);}
 	public function getMkDirKey($path) {return $this->getKey('mkDir',$path);}
 	public function getDirKey($path) {return $this->getKey('dir',$path);}
+	public function getDirROKey($path) {return $this->getKey('dirro',$path);}
 	public function getRmDirKey($path) {return $this->getKey('rmDir',$path);}
 	public function getCreateKey($path) {return $this->getKey('create',$path);}
 

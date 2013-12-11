@@ -12,9 +12,9 @@ $createController->match('/', function (Request $request) use ($app,$fmValidator
 	$filename = $request->get('filename') ;
 	$filename = str_replace('<timestamp>',time(),$filename);
 	$filename = str_replace('<random>',rand(0,pow(10,10)),$filename);
+	$fmValidator->checkFilename($filename,'filename');
 	$path = $fmValidator->getWorkingPath($request->get('path')).'/'.$filename;
 
-	// Todo : check file name
 
 	if(file_exists($path)) $app->abort(409,"File '$filename' already exists");
 

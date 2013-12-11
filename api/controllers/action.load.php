@@ -13,6 +13,9 @@ $loadController->match('/', function (Request $request) use ($app,$fmValidator) 
 
 	if(! file_exists($path)) $app->abort(404,"File '$filename' doesn't exist");
 
+	return $app->sendFile($path);
+
+	/*
 	return $app->json(array(
 		'result' => array(
 			'message' => "File '$filename' loaded",
@@ -20,6 +23,7 @@ $loadController->match('/', function (Request $request) use ($app,$fmValidator) 
 			'content' => file_get_contents($path)
 		)
 	)) ;
+	*/
 
 })->bind("action_load");
 
