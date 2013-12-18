@@ -7,6 +7,7 @@
 // Require
 require_once __DIR__.'/../vendor/autoload.php';
 require_once './inc/fmDataValidator.class.php';
+require_once './inc/viewManager.class.php';
 
 // Use
 use Silex\Application ;
@@ -47,6 +48,11 @@ $app->mount($prefixCommand.'create', include "./controllers/action.create.php");
 $app->mount($prefixCommand.'load', include "./controllers/action.load.php");
 $app->mount($prefixCommand.'save', include "./controllers/action.save.php");
 $app->mount($prefixCommand.'delete', include "./controllers/action.delete.php");
+
+$app->mount($prefixCommand.'getview', include "./controllers/views.getview.php");
+$app->mount($prefixCommand.'setviewdata', include "./controllers/views.setviewdata.php");
+$app->mount($prefixCommand.'getdata', include "./controllers/views.getdata.php");
+$app->mount($prefixCommand.'setdatadata', include "./controllers/views.setdatadata.php");
 
 // Run app
 $app->run();

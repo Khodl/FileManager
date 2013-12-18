@@ -8,7 +8,7 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 
 	$isReadOnly = false ;
 	// Readonly
-	if(	$fmValidator->checkPathKey($request,"DirRO"))
+	if(	$fmValidator->checkPathKey($request,"DirRO",false))
 		$isReadOnly = true ;
 	else
 		$fmValidator->checkPathKey($request,"Dir");
@@ -23,6 +23,7 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 
 			$fullPath = $path.'/'.$file ;
 			$wp = $fmValidator->getWorkingPath($fullPath) ;
+			$fullPath = $fmValidator->getPublicPath($fullPath);
 
 			$isFolder = is_dir($wp) ;
 
@@ -38,13 +39,14 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 			if($isFolder){
 
 				$readOnlyURL = $fmValidator->getActionUrl("action_dir",$fmValidator->getDirROKey($fullPath),array("path"=>$fullPath)) ;
-
-				$i['lazy'] = true ;
+				$i['lazy'] = ($file{0} != '.') ;
 				if(! $isReadOnly){
 					$i['mkdirURL'] = $fmValidator->getActionUrl("action_mkdir",$fmValidator->getMkDirKey($fullPath),array("path"=>$fullPath)) ;
 					$i['rmdirURL'] = $fmValidator->getActionUrl("action_rmdir",$fmValidator->getRmDirKey($fullPath),array("path"=>$fullPath)) ;
 					$i['createURL'] = $fmValidator->getActionUrl("action_create",$fmValidator->getCreateKey($fullPath),array("path"=>$fullPath)) ;
 					$i['dirURL'] = $fmValidator->getActionUrl("action_dir",$fmValidator->getDirKey($fullPath),array("path"=>$fullPath)) ;
+					$i['setViewDataURL'] = $fmValidator->getActionUrl("views_setviewdata",$fmValidator->getSetViewDataKey($fullPath),array("path"=>$fullPath)) ;
+					$i['setDataDataURL'] = $fmValidator->getActionUrl("views_setdatadata",$fmValidator->getSetDataDataKey($fullPath),array("path"=>$fullPath)) ;
 				}else{
 					$i['dirURL'] = $readOnlyURL ;
 				}

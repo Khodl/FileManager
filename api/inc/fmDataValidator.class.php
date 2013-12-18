@@ -103,6 +103,21 @@ class fmDataValidator {
 	}
 
 	/**
+	 * @param $path
+	 */
+	function getPublicPath($path){
+		$name = substr(realpath($this->rootRelative.$path),
+			(
+				strlen(realpath($this->rootRelative))
+				-
+				strlen(realpath($this->rootRelative-$path))
+			)
+		) ;
+		if(! $name) $name = '/' ;
+		return $name ;
+	}
+
+	/**
 	 * @param $type
 	 * @param $path
 	 * @return string
@@ -110,6 +125,7 @@ class fmDataValidator {
 	 * Calculate key, depending on the type
 	 */
 	private function getKey($type,$path){
+		//$this->app->abort(404,$path);
 		return substr(md5(realpath($this->rootRelative.'/'.$path).$type.$this->key),0,10);
 	}
 
@@ -132,11 +148,16 @@ class fmDataValidator {
 		$this->checkPath($path);
 
 		// Check key
-		$key = $this->{'get'.$type.'Key'}($path);
+		$method = 'get'.$type.'Key' ;
+		if(! method_exists($this,$method)) throw new Exception("Cannot get key with '$method'");
+		$key = $this->{$method}($path);
+
+		//$this->app->abort(404,"Checking with $method");
+
 		if($key != $givenKey){
-			if($abortIfWrongKey) return false ;
+			if(! $abortIfWrongKey) return false ;
 			//$this->app->abort(403,"Key should be: ".$key." (and not ".$givenKey.")");
-			$this->app->abort(403,"Key '$givenKey' is wrong");
+			$this->app->abort(403,"Key '$givenKey' is wrong $key");
 		}
 
 		return true ;
@@ -167,7 +188,11 @@ class fmDataValidator {
 		return $this->app['url_generator']->generate($route, array_merge(array('key' => $key),$parameters));
 	}
 
-	// Key calculations
+	/**
+	 * Key calculations
+	 */
+
+	// File Manager
 	public function getSaveKey($path) {return $this->getKey('save',$path);}
 	public function getLoadKey($path) {return $this->getKey('load',$path);}
 	public function getDeleteKey($path) {return $this->getKey('delete',$path);}
@@ -176,5 +201,11 @@ class fmDataValidator {
 	public function getDirROKey($path) {return $this->getKey('dirro',$path);}
 	public function getRmDirKey($path) {return $this->getKey('rmDir',$path);}
 	public function getCreateKey($path) {return $this->getKey('create',$path);}
+
+	// Views
+	public function getGetViewKey($path) {return $this->getKey('getView',$path);}
+	public function getSetViewDataKey($path) {return $this->getKey('setViewData',$path);}
+	public function getGetDataKey($path) {return $this->getKey('getData',$path);}
+	public function getSetDataDataKey($path) {return $this->getKey('setDataData',$path);}
 
 } 

@@ -1,3 +1,11 @@
 directory:
     rootURL: ../_files/ #from api root
     salt: 1234567890
+branch:
+    defaultBranchName: Master
+view:
+    folderName: .views
+    extension: view.json
+data:
+    folderName: .data
+    extension: data.json
