@@ -58,3 +58,32 @@
 		.table-fancytree .no-link {
 			padding : 0 10px ;
 		}
+
+
+	#test-views {
+		margin : 10px 0 ;
+		background : #eee ;
+		padding : 10px ;
+		text-align: center;
+		border-radius: 10px;
+	}
+
+	#test-views-result {
+		background : #efe ;
+		margin-bottom: 10px ;
+		border-radius: 5px ;
+	}
+
+	#test-views input {
+		display : inline-block ;
+		width : 48% ;
+	}
+
+	#test-views textarea {
+		width : 96% ;
+	}
+
+	#test-views-result.view-error {
+		color : #c00 ;
+		background-color: #fee;
+	}
