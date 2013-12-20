@@ -125,8 +125,12 @@ class fmDataValidator {
 	 * Calculate key, depending on the type
 	 */
 	private function getKey($type,$path){
-		//$this->app->abort(404,$path);
-		return substr(md5(realpath($this->rootRelative.'/'.$path).$type.$this->key),0,10);
+		$key = realpath($this->rootRelative.'/'.$path).$type.$this->key ;
+		$key = md5($key,true);
+		$key = base64_encode($key);
+		$key = preg_replace("#[^a-z0-9]#i","",$key);
+		$key = substr($key,0,10);
+		return $key ;
 	}
 
 	/**
@@ -151,18 +155,15 @@ class fmDataValidator {
 		$method = 'get'.$type.'Key' ;
 		if(method_exists($this,$method."RO"))
 			if($givenKey == $this->{$method."RO"}($path))
-				//$this->app->abort(403,"Read only");
 				return true ;
 
 		if(! method_exists($this,$method)) throw new Exception("Cannot get key with '$method'");
 		$key = $this->{$method}($path);
 
-		//$this->app->abort(404,"Checking with $method");
-
 		if($key != $givenKey){
-			//(! $abortIfWrongKey) return false ;
-			//$this->app->abort(403,"Key should be: ".$key." (and not ".$givenKey.")");
-			$this->app->abort(403,"Key '$givenKey' is wrong $key"); // Todo: hide key
+			if($this->app['config']['admin']['displayKey'])
+				$this->app->abort(403,"Key should be: ".$key." (and not ".$givenKey.")");
+			$this->app->abort(403,"Key '$givenKey' is wrong");
 		}
 
 		return false ;

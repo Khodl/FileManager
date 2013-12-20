@@ -1,3 +1,5 @@
+admin:
+    displayKey: true
 directory:
     rootURL: ../_files/ #from api root
     salt: 1234567890

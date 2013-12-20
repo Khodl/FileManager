@@ -72,12 +72,12 @@ class viewManager {
 			'branchName' => $branchName,
 			'revisionName' => $request->get('name'),
 			'isReadOnly' => $isReadOnly,
-			'get'.$this->ucMode."BranchesURL" => $fmValidator->getActionUrl("views_get".$this->mode."branches",$fmValidator->{"getGet".$this->ucMode."BranchesKey".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')))),
-			'get'.$this->ucMode."RevisionsURL" => $fmValidator->getActionUrl("views_get".$this->mode."revisions",$fmValidator->{"getGet".$this->ucMode."RevisionsKey".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),'branch'=>$branchName)),
+			'getBranchesURL' => $fmValidator->getActionUrl("views_get".$this->mode."branches",$fmValidator->{"getGet".$this->ucMode."BranchesKey".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')))),
+			'getRevisionsURL' => $fmValidator->getActionUrl("views_get".$this->mode."revisions",$fmValidator->{"getGet".$this->ucMode."RevisionsKey".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),'branch'=>$branchName)),
 		);
 
 		if(! $isReadOnly){
-			$response['set'.$this->ucMode."DataURL"] = $fmValidator->getActionUrl("views_set".$this->mode."data",$fmValidator->{"getSet".$this->ucMode."DataKey"}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),"branch"=>$branchName)) ;
+			$response['setDataURL'] = $fmValidator->getActionUrl("views_set".$this->mode."data",$fmValidator->{"getSet".$this->ucMode."DataKey"}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),"branch"=>$branchName)) ;
 		}
 
 		$response['data'] = json_decode(file_get_contents($path));
@@ -130,7 +130,9 @@ class viewManager {
 
 		return $app->json(array(
 			'name' => $name,
-			'get'. $this->ucMode .'URL' => $fmValidator->getActionUrl("views_get".$this->mode,$fmValidator->{"getGet".$this->ucMode."Key"}($path),array("path"=>$fmValidator->getPublicPath($path),"name"=>$name,"branch"=>$branchName))
+			'getURL' => $fmValidator->getActionUrl("views_get".$this->mode,$fmValidator->{"getGet".$this->ucMode."Key"}($path),array("path"=>$fmValidator->getPublicPath($path),"name"=>$name,"branch"=>$branchName)),
+			'getBranchesURL' => $fmValidator->getActionUrl("views_get".$this->mode."branches",$fmValidator->{"getGet".$this->ucMode."BranchesKey".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')))),
+			'getRevisionsURL' => $fmValidator->getActionUrl("views_get".$this->mode."revisions",$fmValidator->{"getGet".$this->ucMode."RevisionsKey".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),'branch'=>$branchName)),
 		)) ;
 	}
 
@@ -159,7 +161,7 @@ class viewManager {
 				if($f{0} != '.' && is_dir($pathfile.'/'.$f)) {
 					$i = array(
 						'name' => $f,
-						'get'.$this->ucMode.'RevisionsURL' => $fmValidator->getActionUrl("views_get".$this->mode."revisions",$fmValidator->{"getGet".$this->ucMode."RevisionsKey".$ro}($path),array("path"=>$path,"branch"=>$f))
+						'getRevisionsURL' => $fmValidator->getActionUrl("views_get".$this->mode."revisions",$fmValidator->{"getGet".$this->ucMode."RevisionsKey".$ro}($path),array("path"=>$path,"branch"=>$f))
 					);
 					$branches[] = $i ;
 				}
@@ -208,11 +210,11 @@ class viewManager {
 					$i = array(
 						'name' => $name,
 						'timestamp' => floor($name/100),
-						'get'.$this->ucMode."URL" => $fmValidator->getActionUrl("views_get".$this->mode,$fmValidator->{"getGet".$this->ucMode."Key".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),'name'=>$name)),
+						'getURL' => $fmValidator->getActionUrl("views_get".$this->mode,$fmValidator->{"getGet".$this->ucMode."Key".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),'branch'=>$branchName,'name'=>$name)),
 					);
 
 					if(! $isReadOnly){
-						$i['set'.$this->ucMode."DataURL"] = $fmValidator->getActionUrl("views_set".$this->mode."data",$fmValidator->{"getSet".$this->ucMode."DataKey"}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')))) ;
+						$i['setDataURL'] = $fmValidator->getActionUrl("views_set".$this->mode."data",$fmValidator->{"getSet".$this->ucMode."DataKey"}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')))) ;
 					}
 
 					$r[] = $i ;
