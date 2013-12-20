@@ -34,10 +34,10 @@
 }</textarea>
 
 		<input type="text" id="input-getview" value="/Pro/EPFL/FileManager/api/exec/2d8d7212e3/getview/?path=.&name=138727445202" />
-		<input type="button" id="submit-getview" value="getView">
+		<input type="button" id="submit-getview" value="get JSON">
 
 		<input type="text" id="input-setview" value="/Pro/EPFL/FileManager/api/exec/6ae73e98fa/setviewdata/?path=." />
-		<input type="button" id="submit-setview" value="setViewData (with test object)">
+		<input type="button" id="submit-setview" value="set data (with test object)">
 	</div>
 
 	<div id="login">
@@ -59,10 +59,16 @@
 			<th>CreateFile</th>
 			<th>SetView Data</th>
 			<th>SetData Data</th>
+			<th>getViewBranches</th>
+			<th>getViewBranches RO</th>
+			<th>getDataBranches</th>
+			<th>getDataBranches RO</th>
 		</tr>
 		</thead>
 		<tbody>
 		<tr>
+			<td></td>
+			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
@@ -150,7 +156,7 @@
 				// Initial call, to check data
 				$.ajax({
 					dataType: "json",
-					url: mainURL,
+					url: mainURL
 				}).done(function(data){
 
 					if(data.error){
@@ -172,14 +178,12 @@
 								url = d.dirReadOnlyURL ;
 								console.log("READ ONLY");
 							}
-
 							data.result = {url: url};
 						},
 						extensions: ["table"],
 						table: {
 							indentation: 20,      // indent 20px per node level
-							nodeColumnIdx: 0,     // render the node title into the 2nd column
-							//checkboxColumnIdx: 0  // render the checkboxes into the 1st column
+							nodeColumnIdx: 0     // render the node title into the 2nd column
 						},
 						checkbox: false,
 						renderColumns: function(e, data) {
@@ -188,16 +192,20 @@
 
 							console.log(node.data);
 
-							$tdList.eq(offset+1).html(displayLink("write",node.data.writeURL));
-							$tdList.eq(offset+2).html(displayLink("read",node.data.readURL));
-							$tdList.eq(offset+3).html(displayLink("delete",node.data.deleteURL));
-							$tdList.eq(offset+4).html(displayLink("dir",node.data.dirURL));
-							$tdList.eq(offset+5).html(displayLink("dir (read only)",node.data.dirReadOnlyURL));
-							$tdList.eq(offset+6).html(displayLink("mkdir",node.data.mkdirURL));
-							$tdList.eq(offset+7).html(displayLink("rmdir",node.data.rmdirURL));
-							$tdList.eq(offset+8).html(displayLink("create",node.data.createURL));
-							$tdList.eq(offset+9).html(displayLink("setviewdata",node.data.setViewDataURL));
+							$tdList.eq(offset+ 1).html(displayLink("write",node.data.writeURL));
+							$tdList.eq(offset+ 2).html(displayLink("read",node.data.readURL));
+							$tdList.eq(offset+ 3).html(displayLink("delete",node.data.deleteURL));
+							$tdList.eq(offset+ 4).html(displayLink("dir",node.data.dirURL));
+							$tdList.eq(offset+ 5).html(displayLink("dir (read only)",node.data.dirReadOnlyURL));
+							$tdList.eq(offset+ 6).html(displayLink("mkdir",node.data.mkdirURL));
+							$tdList.eq(offset+ 7).html(displayLink("rmdir",node.data.rmdirURL));
+							$tdList.eq(offset+ 8).html(displayLink("create",node.data.createURL));
+							$tdList.eq(offset+ 9).html(displayLink("setviewdata",node.data.setViewDataURL));
 							$tdList.eq(offset+10).html(displayLink("setdatadata",node.data.setDataDataURL));
+							$tdList.eq(offset+11).html(displayLink("getviewbranches",node.data.getViewBranchesURL));
+							$tdList.eq(offset+12).html(displayLink("getviewbranches (read only)",node.data.getViewBranchesReadOnlyURL));
+							$tdList.eq(offset+13).html(displayLink("getdatabranches",node.data.getDataBranchesURL));
+							$tdList.eq(offset+14).html(displayLink("getdatabranches (read only)",node.data.getDataBranchesReadOnlyURL));
 
 						}
 

@@ -24,7 +24,6 @@ $createController->match('/', function (Request $request) use ($app,$fmValidator
 		'result' => array(
 			'message'=>"File '$filename' created",
 			'filename' => $filename,
-			//'content' => file_get_contents($path)
 			// Todo : writeURL & readURL
 		)
 	)) ;

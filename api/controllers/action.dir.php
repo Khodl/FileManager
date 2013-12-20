@@ -6,14 +6,9 @@ $dirController = $app['controllers_factory'];
 
 $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 
-	$isReadOnly = false ;
-	// Readonly
-	if(	$fmValidator->checkPathKey($request,"DirRO",false))
-		$isReadOnly = true ;
-	else
-		$fmValidator->checkPathKey($request,"Dir");
-	$path = $request->get('path') ;
+	$isReadOnly = $fmValidator->checkPathKey($request,"Dir") ;
 
+	$path = $request->get('path') ;
 
 	$output = array();
 	$dir = opendir($fmValidator->getWorkingPath($path));
@@ -38,7 +33,7 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 			// Folder content
 			if($isFolder){
 
-				$readOnlyURL = $fmValidator->getActionUrl("action_dir",$fmValidator->getDirROKey($fullPath),array("path"=>$fullPath)) ;
+				$readOnlyURL = $fmValidator->getActionUrl("action_dir",$fmValidator->getDirKeyRO($fullPath),array("path"=>$fullPath)) ;
 				$i['lazy'] = ($file{0} != '.') ;
 				if(! $isReadOnly){
 					$i['mkdirURL'] = $fmValidator->getActionUrl("action_mkdir",$fmValidator->getMkDirKey($fullPath),array("path"=>$fullPath)) ;
@@ -47,6 +42,10 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 					$i['dirURL'] = $fmValidator->getActionUrl("action_dir",$fmValidator->getDirKey($fullPath),array("path"=>$fullPath)) ;
 					$i['setViewDataURL'] = $fmValidator->getActionUrl("views_setviewdata",$fmValidator->getSetViewDataKey($fullPath),array("path"=>$fullPath)) ;
 					$i['setDataDataURL'] = $fmValidator->getActionUrl("views_setdatadata",$fmValidator->getSetDataDataKey($fullPath),array("path"=>$fullPath)) ;
+					$i['getViewBranchesURL'] = $fmValidator->getActionUrl("views_getviewbranches",$fmValidator->getGetViewBranchesKey($fullPath),array("path"=>$fullPath)) ;
+					$i['getViewBranchesReadOnlyURL'] = $fmValidator->getActionUrl("views_getviewbranches",$fmValidator->getGetViewBranchesKeyRO($fullPath),array("path"=>$fullPath)) ;
+					$i['getDataBranchesURL'] = $fmValidator->getActionUrl("views_getdatabranches",$fmValidator->getGetDataBranchesKey($fullPath),array("path"=>$fullPath)) ;
+					$i['getDataBranchesReadOnlyURL'] = $fmValidator->getActionUrl("views_getdatabranches",$fmValidator->getGetDataBranchesKeyRO($fullPath),array("path"=>$fullPath)) ;
 				}else{
 					$i['dirURL'] = $readOnlyURL ;
 				}
@@ -61,8 +60,6 @@ $dirController->match('/', function (Request $request) use ($app,$fmValidator) {
 				}
 			}
 
-
-			//$output['result'][] = $i ;
 			$output[] = $i ;
 
 		}

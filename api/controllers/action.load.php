@@ -15,16 +15,6 @@ $loadController->match('/', function (Request $request) use ($app,$fmValidator) 
 
 	return $app->sendFile($path);
 
-	/*
-	return $app->json(array(
-		'result' => array(
-			'message' => "File '$filename' loaded",
-			'filename' => $filename,
-			'content' => file_get_contents($path)
-		)
-	)) ;
-	*/
-
 })->bind("action_load");
 
 return $loadController;

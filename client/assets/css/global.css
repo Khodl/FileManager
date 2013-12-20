@@ -72,6 +72,8 @@
 		background : #efe ;
 		margin-bottom: 10px ;
 		border-radius: 5px ;
+		padding : 10px ;
+		overflow : auto ;
 	}
 
 	#test-views input {

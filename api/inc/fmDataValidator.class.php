@@ -149,18 +149,23 @@ class fmDataValidator {
 
 		// Check key
 		$method = 'get'.$type.'Key' ;
+		if(method_exists($this,$method."RO"))
+			if($givenKey == $this->{$method."RO"}($path))
+				//$this->app->abort(403,"Read only");
+				return true ;
+
 		if(! method_exists($this,$method)) throw new Exception("Cannot get key with '$method'");
 		$key = $this->{$method}($path);
 
 		//$this->app->abort(404,"Checking with $method");
 
 		if($key != $givenKey){
-			if(! $abortIfWrongKey) return false ;
+			//(! $abortIfWrongKey) return false ;
 			//$this->app->abort(403,"Key should be: ".$key." (and not ".$givenKey.")");
-			$this->app->abort(403,"Key '$givenKey' is wrong $key");
+			$this->app->abort(403,"Key '$givenKey' is wrong $key"); // Todo: hide key
 		}
 
-		return true ;
+		return false ;
 	}
 
 	/**
@@ -190,6 +195,7 @@ class fmDataValidator {
 
 	/**
 	 * Key calculations
+	 * Add RO when should it be interpreted as a read only key
 	 */
 
 	// File Manager
@@ -198,14 +204,24 @@ class fmDataValidator {
 	public function getDeleteKey($path) {return $this->getKey('delete',$path);}
 	public function getMkDirKey($path) {return $this->getKey('mkDir',$path);}
 	public function getDirKey($path) {return $this->getKey('dir',$path);}
-	public function getDirROKey($path) {return $this->getKey('dirro',$path);}
+	public function getDirKeyRO($path) {return $this->getKey('dirro',$path);}
 	public function getRmDirKey($path) {return $this->getKey('rmDir',$path);}
 	public function getCreateKey($path) {return $this->getKey('create',$path);}
 
 	// Views
 	public function getGetViewKey($path) {return $this->getKey('getView',$path);}
-	public function getSetViewDataKey($path) {return $this->getKey('setViewData',$path);}
+	public function getGetViewKeyRO($path) {return $this->getKey('getViewRO',$path);}
 	public function getGetDataKey($path) {return $this->getKey('getData',$path);}
+	public function getGetDataKeyRO($path) {return $this->getKey('getDataRO',$path);}
+	public function getSetViewDataKey($path) {return $this->getKey('setViewData',$path);}
 	public function getSetDataDataKey($path) {return $this->getKey('setDataData',$path);}
+	public function getGetViewBranchesKey($path) {return $this->getKey('getViewBranches',$path);}
+	public function getGetViewBranchesKeyRO($path) {return $this->getKey('getViewBranchesRO',$path);}
+	public function getGetDataBranchesKey($path) {return $this->getKey('getDataBranches',$path);}
+	public function getGetDataBranchesKeyRO($path) {return $this->getKey('getDataBranchesRO',$path);}
+	public function getGetViewRevisionsKey($path) {return $this->getKey('getViewRevisions',$path);}
+	public function getGetViewRevisionsKeyRO($path) {return $this->getKey('getViewRevisionsRO',$path);}
+	public function getGetDataRevisionsKey($path) {return $this->getKey('getDataRevisions',$path);}
+	public function getGetDataRevisionsKeyRO($path) {return $this->getKey('getDataRevisionsRO',$path);}
 
 } 

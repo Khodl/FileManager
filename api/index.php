@@ -49,10 +49,12 @@ $app->mount($prefixCommand.'load', include "./controllers/action.load.php");
 $app->mount($prefixCommand.'save', include "./controllers/action.save.php");
 $app->mount($prefixCommand.'delete', include "./controllers/action.delete.php");
 
-$app->mount($prefixCommand.'getview', include "./controllers/views.getview.php");
-$app->mount($prefixCommand.'setviewdata', include "./controllers/views.setviewdata.php");
-$app->mount($prefixCommand.'getdata', include "./controllers/views.getdata.php");
-$app->mount($prefixCommand.'setdatadata', include "./controllers/views.setdatadata.php");
+foreach(array("view","data") AS $mode){
+	$app->mount($prefixCommand.'get'.$mode, include "./controllers/views.get".$mode.".php");
+	$app->mount($prefixCommand.'set'.$mode.'data', include "./controllers/views.set".$mode."data.php");
+	$app->mount($prefixCommand.'get'.$mode.'branches', include "./controllers/views.get".$mode."branches.php");
+	$app->mount($prefixCommand.'get'.$mode.'revisions', include "./controllers/views.get".$mode."revisions.php");
+}
 
 // Run app
 $app->run();

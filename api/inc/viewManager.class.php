@@ -9,6 +9,11 @@ class viewManager {
 
 	private $app, $request, $fmValidator,$mode,$ucMode ;
 
+	/**
+	 * @param \Silex\Application $app
+	 * @param \Symfony\Component\HttpFoundation\Request $request
+	 * @param fmDataValidator $fmValidator
+	 */
 	function __construct(Silex\Application $app, \Symfony\Component\HttpFoundation\Request $request, fmDataValidator $fmValidator){
 		$this->app = $app;
 		$this->request = $request ;
@@ -17,6 +22,12 @@ class viewManager {
 		return $this ;
 	}
 
+
+	/**
+	 * @param $mode
+	 * @return $this
+	 * @throws Exception
+	 */
 	public function setMode($mode){
 		if(! in_array($mode,array('view','data'))) throw new Exception("Wrong mode");
 		$this->mode = $mode ;
@@ -25,13 +36,18 @@ class viewManager {
 		return $this ;
 	}
 
+
+	/**
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
 	public function runGet(){
 
 		$request = $this->request ;
 		$fmValidator = $this->fmValidator ;
 		$app = $this->app ;
 
-		$fmValidator->checkPathKey($request,"Get".$this->ucMode);
+		$isReadOnly = $fmValidator->checkPathKey($request,"Get".$this->ucMode);
+
 		$fmValidator->checkRequestParameters(array('name'),$request);
 
 		$branchName = $request->get('branch');
@@ -41,22 +57,39 @@ class viewManager {
 		$fmValidator->checkFilename($branchName,'branch');
 		$fmValidator->checkFilename($branchName,'name');
 
-		$dirName = $app['config'][$this->mode]['folderName'] ;
-		$viewExt = $app['config'][$this->mode]['extension'] ;
+		$dirName = $app['config'][$this->mode]['folderName'];
+		$viewExt = $app['config'][$this->mode]['extension'];
 
 		$path = $fmValidator->getWorkingPath($request->get('path')).'/'.$dirName.'/'.$branchName.'/'.$request->get('name').'.'.$viewExt ;
 		if(! file_exists($path)){
 			$app->abort(404,"File '$path' not found");
 		}
 
-		return $app->json(array(
-			'_branchName' => $branchName,
-			'_revisionName' => basename($path),
-			'_data' => json_decode(file_get_contents($path))
-		)) ;
+		$ro = "" ;
+		if($isReadOnly) $ro = "RO" ;
+
+		$response = array(
+			'branchName' => $branchName,
+			'revisionName' => $request->get('name'),
+			'isReadOnly' => $isReadOnly,
+			'get'.$this->ucMode."BranchesURL" => $fmValidator->getActionUrl("views_get".$this->mode."branches",$fmValidator->{"getGet".$this->ucMode."BranchesKey".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')))),
+			'get'.$this->ucMode."RevisionsURL" => $fmValidator->getActionUrl("views_get".$this->mode."revisions",$fmValidator->{"getGet".$this->ucMode."RevisionsKey".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),'branch'=>$branchName)),
+		);
+
+		if(! $isReadOnly){
+			$response['set'.$this->ucMode."DataURL"] = $fmValidator->getActionUrl("views_set".$this->mode."data",$fmValidator->{"getSet".$this->ucMode."DataKey"}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),"branch"=>$branchName)) ;
+		}
+
+		$response['data'] = json_decode(file_get_contents($path));
+
+		return $app->json($response) ;
 
 	}
 
+
+	/**
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
 	public function runSetData(){
 
 		$request = $this->request ;
@@ -98,8 +131,99 @@ class viewManager {
 		return $app->json(array(
 			'name' => $name,
 			'get'. $this->ucMode .'URL' => $fmValidator->getActionUrl("views_get".$this->mode,$fmValidator->{"getGet".$this->ucMode."Key"}($path),array("path"=>$fmValidator->getPublicPath($path),"name"=>$name,"branch"=>$branchName))
-			//'path' => $fmValidator->getPublicPath($path)
 		)) ;
+	}
+
+	/**
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
+	public function runGetBranches(){
+
+		$request = $this->request ;
+		$fmValidator = $this->fmValidator ;
+		$app = $this->app ;
+
+		$dirName = $app['config'][$this->mode]['folderName'] ;
+
+
+		$isReadOnly = $fmValidator->checkPathKey($request,"Get".$this->ucMode."Branches");
+		$pathfile = $fmValidator->getWorkingPath($request->get('path').'/'.$dirName) ;
+		$path = $fmValidator->getPublicPath($request->get('path'));
+
+		$branches = array();
+		$ro = "";
+		if($isReadOnly) $ro = "RO";
+
+		if($r = opendir($pathfile)){
+			while($f = readdir($r)){
+				if($f{0} != '.' && is_dir($pathfile.'/'.$f)) {
+					$i = array(
+						'name' => $f,
+						'get'.$this->ucMode.'RevisionsURL' => $fmValidator->getActionUrl("views_get".$this->mode."revisions",$fmValidator->{"getGet".$this->ucMode."RevisionsKey".$ro}($path),array("path"=>$path,"branch"=>$f))
+					);
+					$branches[] = $i ;
+				}
+			}
+		}
+
+		$r = array(
+			'isReadOnly' => $isReadOnly,
+			'branches' => $branches
+		);
+
+		return $app->json($r);
+	}
+
+
+	/**
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
+	public function runGetRevisions(){
+
+		$request = $this->request ;
+		$fmValidator = $this->fmValidator ;
+		$app = $this->app ;
+
+		$isReadOnly = $fmValidator->checkPathKey($request,"Get".$this->ucMode."Revisions");
+
+		$fmValidator->checkRequestParameters(array('branch'),$request);
+		$dirName = $app['config'][$this->mode]['folderName'] ;
+		$ext = $app['config'][$this->mode]['extension'] ;
+		$branchName = $request->get('branch');
+		$fmValidator->checkFilename($branchName,'branch');
+
+		$fullpath = $fmValidator->getWorkingPath($request->get('path')).'/'.$dirName.'/'.$branchName ;
+		if(! $d = opendir($fullpath))
+			$app->abort(404,"Branch '$branchName' doesn't exist");
+
+		$r = array();
+		$ro = "";
+		if($isReadOnly) $ro = "RO";
+
+		while($f = readdir($d)){
+			if($f{0} != '.'){
+				// Is correct extension
+				if(strpos($f,$ext) == strlen($f)-strlen($ext)){
+					$name = substr($f,0,-1*strlen($ext)-1) ;
+					$i = array(
+						'name' => $name,
+						'timestamp' => floor($name/100),
+						'get'.$this->ucMode."URL" => $fmValidator->getActionUrl("views_get".$this->mode,$fmValidator->{"getGet".$this->ucMode."Key".$ro}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')),'name'=>$name)),
+					);
+
+					if(! $isReadOnly){
+						$i['set'.$this->ucMode."DataURL"] = $fmValidator->getActionUrl("views_set".$this->mode."data",$fmValidator->{"getSet".$this->ucMode."DataKey"}($request->get('path')),array("path"=>$fmValidator->getPublicPath($request->get('path')))) ;
+					}
+
+					$r[] = $i ;
+				}
+			}
+		}
+
+		return $app->json(array(
+			'isReadOnly' => $isReadOnly,
+			'revisions' => $r
+		));
 	}
 
 } 

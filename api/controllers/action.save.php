@@ -17,7 +17,6 @@ $saveController->match('/', function (Request $request) use ($app,$fmValidator) 
 		'result' => array(
 			'message'=>"File '$filename' updated",
 			'filename' => $filename,
-			//'content' => file_get_contents($path)
 		)
 	)) ;
 
